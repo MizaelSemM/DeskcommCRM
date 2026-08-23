@@ -9,8 +9,11 @@ import type { NextConfig } from "next";
  */
 const nextConfig: NextConfig = {
   // Self-host (HostGator): gera .next/standalone pro container Docker (node server.js).
-  // Aditivo — não afeta o deploy Vercel.
-  output: "standalone",
+  // Na Vercel, standalone tem que ficar OFF: no next@16.3.x o adaptador dela pula a
+  // geração de `.next/next-server.js.nft.json` quando standalone está ligado, e o
+  // onBuildComplete tenta ler o arquivo e morre com ENOENT (vercel/next.js#96646).
+  // VERCEL=1 só existe no build da Vercel; o publish-image.yml (Docker) não o define.
+  output: process.env.VERCEL ? undefined : "standalone",
   /**
    * O `standalone` copia SÓ o que o file tracing detecta — e ele não detecta
    * tudo de `@swc/helpers`.
